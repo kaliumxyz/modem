@@ -1,0 +1,4 @@
+// x = audio channel 1
+// y = audio channel 2
+// s = sin
+x / y s
