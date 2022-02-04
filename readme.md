@@ -1,3 +1,4 @@
+```
 // welcome to the modem language
 // modem stands for modulation / demodulation
 // this is a modulation based forth like stack
@@ -25,3 +26,5 @@ default loop t sin swap play end
 // ideas
 // perhaps it should have one function per stream somehow to be cleaner?
 // stack based languages are a pain to work with for most people, either fix it in syntax by adding variables or add a visualizer oslt
+
+```
