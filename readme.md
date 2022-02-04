@@ -1,12 +1,15 @@
-```
-// welcome to the modem language
-// modem stands for modulation / demodulation
-// this is a modulation based forth like stack
-// based programming language for the purpose
-// of making music. Its functional and blahblah
+# modem ♬
 
-// in forth you have no functions, instead you
-// use words.
+welcome to the modem waveform definition language
+modem stands for modulation / demodulation this is a modulation oriented forth like language
+this means its stack based, has `words` as functions, and most important operations are intended to modify.
+
+
+
+Modem language exists for the purpose of making music. The code you write gets ran for every single frame of a stream of sound.
+
+``` forth
+
 pi sin // will result in 1 being on the stack
 
 // much like forth modem uses words which you can
@@ -26,5 +29,4 @@ default loop t sin swap play end
 // ideas
 // perhaps it should have one function per stream somehow to be cleaner?
 // stack based languages are a pain to work with for most people, either fix it in syntax by adding variables or add a visualizer oslt
-
 ```
