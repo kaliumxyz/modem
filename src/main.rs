@@ -25,49 +25,76 @@ fn main() {
 
     for path in args.files {
         println!("file: {:?}\nmuted: {:?}\n", path, args.mute);
-        parse_file(path, !args.mute);
+        let vm = State{ compile_nestings: 0, mute: true};
+        parse_file(path, vm);
         // play_file(item);
     }
 }
 
-#[allow(dead_code)]
+pub struct State {
+    compile_nestings: u8,
+    mute: bool,
+}
+
 #[derive(Debug, PartialEq)]
 enum Words {
-    sin,
-    saw,
-    pi,
-    compile,
-    compileEnd,
-    comment,
-    undefined,
+    Sin,
+    Saw,
+    Tan,
+    Swap,
+    Loop,
+    Pi,
+    Compile,
+    CompileEnd,
+    Comment,
+    Number(u16),
+    Undefined,
 }
 
 /// this gets the file path, reads the file, and passes it to the tokenizer
-fn parse_file(path: String, mute: bool) {
+fn parse_file(path: String, mut state: State) {
     let stack: Vec<u16> = Vec::new();
     let file = BufReader::new(File::open(path).expect("open failed"));
     // println!("{:?}!", file);
+    // TODO: add index for error printing / prettier error printing
     for line in file.lines() {
         for word in line.expect("Unable to read line").split_whitespace() {
+            // add unwrapping string and detecting number here. TODO find out if unwrap can ever fail on a string, how???
+            //
             let res = match word {
-                "//" => Words::comment,
-                "sin" => Words::sin,
-                "pi" => Words::pi,
-                ":" => Words::compile,
-                ";" => Words::compileEnd,
-                // 0..9 => stack.push(ch),
-                _ => Words::undefined,
+                "//" => Words::Comment,
+                "sin" => Words::Sin,
+                "saw" => Words::Saw,
+                "loop" => Words::Loop,
+                "swap" => Words::Swap,
+                "tan" => Words::Tan,
+                "pi" => Words::Pi,
+                ":" => Words::Compile,
+                ";" => Words::CompileEnd,
+                _ => Words::Undefined,
             };
             match res {
-                Words::compile => {
+                Words::Compile => {
                     // add some way to start a compiling mode for defining new words
-                    // mode = compile;
+                    state.compile_nestings += 1;
+                    // TODO: line goes to recursive compilation
                     break;
                 },
-                Words::comment => {
+                Words::Swap => {
                     break;
                 },
-                Words::undefined => {},
+                Words::Comment => {
+                    break;
+                },
+                // Words::Number => {
+                //     stack.push(word);
+                // }
+                Words::Undefined => {
+                    panic!("Undefined word: {:?}", word);
+                //     // match x {
+                //     //     0..=9 => Words::Number(word.parse::<u16>().unwrap()),
+                //     // };
+                },
                 _ => {},
             }
             // if res == Words::comment {
