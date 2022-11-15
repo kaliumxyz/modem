@@ -36,6 +36,8 @@ enum Words {
     sin,
     saw,
     pi,
+    compile,
+    compileEnd,
     comment,
     undefined,
 }
@@ -51,12 +53,26 @@ fn parse_file(path: String, mute: bool) {
                 "//" => Words::comment,
                 "sin" => Words::sin,
                 "pi" => Words::pi,
+                ":" => Words::compile,
+                ";" => Words::compileEnd,
                 // 0..9 => stack.push(ch),
                 _ => Words::undefined,
             };
-            if res == Words::comment {
-                break;
+            match res {
+                Words::compile => {
+                    // add some way to start a compiling mode for defining new words
+                    // mode = compile;
+                    break;
+                },
+                Words::comment => {
+                    break;
+                },
+                Words::undefined => {},
+                _ => {},
             }
+            // if res == Words::comment {
+            //     break;
+            // }
             println!("Word: {}, {:?}", word, res);
         }
     }
