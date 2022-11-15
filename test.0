@@ -25,3 +25,5 @@ default loop t sin swap play end
 // ideas
 // perhaps it should have one function per stream somehow to be cleaner?
 // stack based languages are a pain to work with for most people, either fix it in syntax by adding variables or add a visualizer oslt
+// Do state scoped to functions to do variables.
+// e.g. : my_var $s ; : $my_var . ; oslt, get from special scoped stacks
