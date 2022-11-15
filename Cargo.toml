@@ -1,12 +1,13 @@
 [package]
 name = "audioviz"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-clap = { version = "3.0.13", features = ["derive"] }
+clap = { version = "4.0.23", features = ["derive"] }
 rodio= { version = "0.15.0" }
 dasp= { version = "0.11.0" }
 dasp_signal= { version = "0.11.0" }
 cpal= { version = "0.13.5" }
+audio-visualizer = "0.3.1"
