@@ -11,13 +11,11 @@ use dasp_signal::{self as signal, Signal};
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-    /// Name of the person to greet
-    #[clap(short, long)]
-    name: Option<String>,
-
     files: Vec<String>,
 
-    /// Number of times to greet
+    #[clap(short, long)]
+    mute: bool,
+
     #[clap(short, long, default_value_t = 1)]
     count: u8,
 }
@@ -25,51 +23,57 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    for item in args.files {
-        println!("{:?}!", item);
-        parse_file(item);
+    for path in args.files {
+        println!("{:?}, {:?}", path, args.mute);
+        parse_file(path, !args.mute);
         // play_file(item);
     }
 }
 
 #[allow(dead_code)]
-struct Ops {
+struct Words {
     sin: String,
     saw: String,
 }
 
-fn parse_file(item: String) {
+/// this gets the file path, reads the file, and passes it to the tokenizer
+fn parse_file(path: String, mute: bool) {
     let stack: Vec<u16> = Vec::new();
-    let file = BufReader::new(File::open(item).expect("open failed"));
+    let file = BufReader::new(File::open(path).expect("open failed"));
     println!("{:?}!", file);
     for line in file.lines() {
-        let mut is_comment = 0;
-        for ch in line.expect("Unable to read line").chars() {
-            match ch {
-                '/' => is_comment += 1,
-                's' => sin(),
-                // 0..9 => stack.push(ch),
-                _ => is_comment = 0,
+        for word in line.expect("Unable to read line").split_whitespace() {
+            if mute {
+                let res = match word {
+                    "//" => break,
+                    "sin" => "sin",
+                    // 0..9 => stack.push(ch),
+                    _ => continue,
+                };
+                println!("Word: {}", res);
+            } else {
+                match word {
+                    "//" => break,
+                    "sin" => {},
+                    // 0..9 => stack.push(ch),
+                    _ => continue,
+                }
+                println!("Word: {}", word);
             }
-            if is_comment == 2 {
-                break;
-            } else if is_comment > 0 {
-                continue;
-            }
-            println!("Character: {}", ch);
         }
     }
 }
 
+
 #[allow(dead_code)]
 fn sin() {
-    let mut devices = cpal::default_host().output_devices().unwrap();
-    let mut device = devices.last().unwrap();
+    let devices = cpal::default_host().output_devices().unwrap();
+    let device = devices.last().unwrap();
     let mut config = device.default_output_config().unwrap().config();
     config.channels = 2;
     // Generates a saw wave signal at 1hz to be sampled 4 times per second.
-    let mut signal = signal::rate(44100.0).const_hz(200.0).saw();
-    let mut stream = device
+    let mut signal = signal::rate(44100.0).const_hz(44100.0).saw();
+    let stream = device
         .build_output_stream(
             &config,
             move |data: &mut [f32], info: &cpal::OutputCallbackInfo| {
@@ -88,7 +92,6 @@ fn sin() {
         .unwrap();
 
     // let (_stream, stream_handle) = OutputStream::try_from_device(&device).ok().unwrap();
-    while true {}
 }
 
 #[allow(dead_code)]
