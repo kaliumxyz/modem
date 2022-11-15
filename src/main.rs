@@ -24,42 +24,40 @@ fn main() {
     let args = Args::parse();
 
     for path in args.files {
-        println!("{:?}, {:?}", path, args.mute);
+        println!("file: {:?}\nmuted: {:?}\n", path, args.mute);
         parse_file(path, !args.mute);
         // play_file(item);
     }
 }
 
 #[allow(dead_code)]
-struct Words {
-    sin: String,
-    saw: String,
+#[derive(Debug, PartialEq)]
+enum Words {
+    sin,
+    saw,
+    pi,
+    comment,
+    undefined,
 }
 
 /// this gets the file path, reads the file, and passes it to the tokenizer
 fn parse_file(path: String, mute: bool) {
     let stack: Vec<u16> = Vec::new();
     let file = BufReader::new(File::open(path).expect("open failed"));
-    println!("{:?}!", file);
+    // println!("{:?}!", file);
     for line in file.lines() {
         for word in line.expect("Unable to read line").split_whitespace() {
-            if mute {
-                let res = match word {
-                    "//" => break,
-                    "sin" => "sin",
-                    // 0..9 => stack.push(ch),
-                    _ => continue,
-                };
-                println!("Word: {}", res);
-            } else {
-                match word {
-                    "//" => break,
-                    "sin" => {},
-                    // 0..9 => stack.push(ch),
-                    _ => continue,
-                }
-                println!("Word: {}", word);
+            let res = match word {
+                "//" => Words::comment,
+                "sin" => Words::sin,
+                "pi" => Words::pi,
+                // 0..9 => stack.push(ch),
+                _ => Words::undefined,
+            };
+            if res == Words::comment {
+                break;
             }
+            println!("Word: {}, {:?}", word, res);
         }
     }
 }
