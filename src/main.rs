@@ -1,9 +1,10 @@
 use clap::Parser;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::Sample;
-use rodio::{source::SineWave, source::Source, Decoder, Device, Devices, OutputStream};
+use rodio::{source::SineWave, source::Source, Decoder, Device, Devices, OutputStream, Sink};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::time::Duration;
 
 extern crate dasp;
 use dasp_signal::{self as signal, Signal};
@@ -38,11 +39,13 @@ pub struct State {
 
 #[derive(Debug, PartialEq)]
 enum Words {
-    Sin,
+    Sine,
+    Default,
     Saw,
-    Tan,
     Swap,
     Loop,
+    Sin,
+    Tan,
     Pi,
     Compile,
     CompileEnd,
@@ -53,17 +56,24 @@ enum Words {
 
 /// this gets the file path, reads the file, and passes it to the tokenizer
 fn parse_file(path: String, mut state: State) {
+
     let stack: Vec<u16> = Vec::new();
+
+    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+    let sink = Sink::try_new(&stream_handle).unwrap();
+
     let file = BufReader::new(File::open(path).expect("open failed"));
     // println!("{:?}!", file);
     // TODO: add index for error printing / prettier error printing
     for line in file.lines() {
         for word in line.expect("Unable to read line").split_whitespace() {
             // add unwrapping string and detecting number here. TODO find out if unwrap can ever fail on a string, how???
-            //
+
             let res = match word {
                 "//" => Words::Comment,
+                "sine" => Words::Sine,
                 "sin" => Words::Sin,
+                "default" => Words::Default,
                 "saw" => Words::Saw,
                 "loop" => Words::Loop,
                 "swap" => Words::Swap,
@@ -73,6 +83,7 @@ fn parse_file(path: String, mut state: State) {
                 ";" => Words::CompileEnd,
                 _ => Words::Undefined,
             };
+
             match res {
                 Words::Compile => {
                     // add some way to start a compiling mode for defining new words
@@ -85,6 +96,11 @@ fn parse_file(path: String, mut state: State) {
                 },
                 Words::Comment => {
                     break;
+                },
+                Words::Sine => {
+                    // Add a dummy source of the sake of the example.
+                    let source = SineWave::new(440.0).take_duration(Duration::from_secs_f32(0.25)).amplify(0.20);
+                    sink.append(source);
                 },
                 // Words::Number => {
                 //     stack.push(word);
