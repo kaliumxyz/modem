@@ -1,0 +1,7 @@
+// welcome to the modem waveform definition language
+// modem stands for modulation / demodulation
+// this is a modulation based forth like stack
+// based programming language for the purpose
+// of making music. Its functional and blahblah
+
+default sine
