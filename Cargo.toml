@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 clap = { version = "4.0.23", features = ["derive"] }
-rodio= { version = "0.15.0" }
+rodio= { version = "0.16.0" }
 dasp= { version = "0.11.0" }
 dasp_signal= { version = "0.11.0" }
-cpal= { version = "0.13.5" }
+cpal= { version = "0.14.1" }
 audio-visualizer = "0.3.1"
